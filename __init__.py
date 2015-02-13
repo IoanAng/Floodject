@@ -113,5 +113,5 @@ def create_point(x_ocean, y_ocean):
 	ocean_point.AddPoint(x_ocean, y_ocean)
 	print ocean_point.ExportToWkt()
 	
-if __name__ == "__main__":
+if __name__ == "__init__":
 	main()
