@@ -1,0 +1,98 @@
+#!/usr/bin/env python
+
+#########################
+#	IMPORT		#
+#########################
+
+import os
+import sys
+import subprocess
+#import numpy
+
+
+#########################
+#	PRELIMINARY	#
+#########################
+
+# path to the GRASS GIS launch script
+# MS Windows
+grass7bin_win = r'C:\Program Files (x86)\GRASS GIS 7.0.0RC2\grass70.bat'
+# uncomment when using standalone WinGRASS installer
+# grass7bin_win = r'C:\Program Files (x86)\GRASS GIS 7.0.0beta3\grass70.bat'
+# Linux
+grass7bin_lin = 'grass70'
+
+#########################
+#	DATA		#
+#########################
+
+# Most of the information provided by this step, is done first time using grass, so if you haven't done that yet, run GRASS on your machine and go through the "Location Wizard" and change the names where appropriate below
+
+# add your path to grassdata (the GRASS GIS database) directory
+gisdb = 'C:\Users\John\Documents\grassdata'
+
+# the following path is the default path on MS Windows:
+# gisdb = os.path.join(os.path.expanduser("~"), "Documents/grassdata")
+# specify (existing) location and mapset, program has to run once to set these up
+location = "demolocation"
+mapset   = "PERMANENT"
+
+#########################
+#	SOFTWARE	#
+#########################
+
+if sys.platform.startswith('linux'):
+    # we assume that the GRASS GIS start script is available and in the PATH
+    # query GRASS 7 itself for its GISBASE
+    grass7bin = grass7bin_lin
+elif sys.platform.startswith('win'):
+    grass7bin = grass7bin_win
+else:
+    raise OSError('Platform not configured.')
+
+gisbase = 'C:\Program Files (x86)\GRASS GIS 7.0.0RC2' # query GRASS 7 itself for its GISBASE
+
+# Set GISBASE environment variable
+os.environ['GISBASE'] = gisbase
+# the following not needed with trunk
+os.environ['PATH'] += os.pathsep + os.path.join(gisbase, 'extrabin')
+
+# define GRASS-Python environment
+gpydir = os.path.join(gisbase, "etc", "python")
+sys.path.append(gpydir)
+
+#########################
+#	DATA		#
+#########################
+
+# Set GISDBASE environment variable
+os.environ['GISDBASE'] = gisdb
+
+
+#########################
+#	START SESSION	#
+#########################
+
+
+# import GRASS Python bindings (see also pygrass)
+import grass.script as gscript
+import grass.script.setup as gsetup
+
+
+#########################
+# 	LAUNCH SESSION	#
+#########################
+
+gsetup.init(gisbase,
+            gisdb, location, mapset)
+
+gscript.message('Current GRASS GIS 7 environment:')
+print gscript.gisenv()
+
+gscript.message('Available raster maps:')
+for rast in gscript.list_strings(type = 'rast'):
+    print rast
+
+gscript.message('Available vector maps:')
+for vect in gscript.list_strings(type = 'vect'):
+    print vect
